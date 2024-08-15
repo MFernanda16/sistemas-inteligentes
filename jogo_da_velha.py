@@ -12,6 +12,8 @@ class JogoDaVelha:
         self.jogador_atual = 'X'
         self.ia = 'O'
         self.humano = 'X'
+        self.jogadas = []
+        self.arquivo = open(r"jogadas", "a")
         self.criar_interface()
 
     def criar_interface(self):
@@ -25,6 +27,8 @@ class JogoDaVelha:
         """Verifica se o jogo acabou e exibe uma mensagem de vitória ou empate"""
         if self.checar_vencedor(jogador_atual):
             messagebox.showinfo("Fim de Jogo", f"Jogador {jogador_atual} venceu!")
+            mandala = self.mandala_vencedora(jogador_atual)
+            self.gravar_mandala(mandala)
             self.reiniciar_jogo()
             return True
         elif self.checar_empate():
@@ -87,6 +91,7 @@ class JogoDaVelha:
         """Define a lógica do jogador humano e define a próxima jogada ou o fim do jogo (vitória, empate ou IA)"""
         if self.botao[i][j]['text'] == '' and self.jogador_atual == 'X':
             self.botao[i][j]['text'] = self.jogador_atual
+            self.jogadas.append((i, j))
             if not self.eh_fim_de_jogo(self.jogador_atual):
                 self.jogador_atual = 'O'
                 self.ia_jogar()
@@ -97,6 +102,7 @@ class JogoDaVelha:
         if movimento:
             i, j = movimento
             self.botao[i][j]['text'] = 'O'
+            self.jogadas.append((i, j))
             if not self.eh_fim_de_jogo(self.jogador_atual):
                 self.jogador_atual = 'X'
 
@@ -127,6 +133,18 @@ class JogoDaVelha:
             for j in range(3):
                 self.botao[i][j]['text'] = ''
         self.jogador_atual = 'X'
+        self.jogadas = []
+
+    def mandala_vencedora(self, jogador):
+        mandala = []
+        if jogador == self.humano:
+            mandala = self.jogadas[::2]
+        else:
+            mandala = self.jogadas[1::2]
+        return mandala
+    
+    def gravar_mandala(self, mandala):
+        self.arquivo.write(f"{str(mandala)}\n")
 
 if __name__ == "__main__":
     root = tk.Tk()
